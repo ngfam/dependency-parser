@@ -1,7 +1,8 @@
+import math
 from DataReader.conllu_reader import Reader
 from TrainingHandler.extractor import extractor
 
-read = Reader('Data/test.conllu')
+read = Reader('Data/dev.conllu')
 
 def sentences():
     for x in read.sentenceReader():
@@ -14,8 +15,8 @@ def sentences():
         if flag == False:
             continue
 
-        return [sentence]
-
+        yield sentence
+        # return [sentence]
 
 SHIFT = 0 
 RIGHT = 1
@@ -44,6 +45,8 @@ class Testing:
         self.ngram = ngram
         self.correct = 0
         self.total = 0
+        self.allCorrect = 0
+        self.countSentence = 0
 
     def trainsition(self, move, idx, stack, deps, rid, heads):
         if move == RIGHT:
@@ -65,7 +68,9 @@ class Testing:
         for x in features:
             cur = self.ngram.queryTuple(x)
             for i in range(3):
-                scores[i] += cur[i]
+                if cur[i] == 0:
+                    continue
+                scores[i] += math.log2(cur[i])
         return scores
 
     def getValidMove(self, n, idx, stack):
@@ -100,14 +105,16 @@ class Testing:
             if idx == -1:
                 break
         
-        print(words)
-        print(tags)
-        print(heads, result)
-
+        all = 0
         for i in range(n):
             if heads[i] == result[i + 1]:
                 self.correct += 1
+            else:
+                all += 1
             self.total += 1
+        if all < 3:
+            self.allCorrect += 1
+        self.countSentence += 1
 
 
     def process(self):

@@ -56,7 +56,7 @@ def extractor(idx, words, tags, parse, stack):
     Dn0s0 = min(5, w0 - s0) if s0 != 0 and w0 != None else 0
     features = []
 
-    ## unigram
+    # unigram
     for w in (w0, w1, w2, s0, s1, s2, s0l1, s0l2, s0r1, s0r2, w0l1, w0l2):
         if w is not None:
             features.append((d(w), ))

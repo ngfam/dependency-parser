@@ -11,4 +11,6 @@ ngram = a.process()
 b = Testing(ngram)
 b.process()
 
+print(b.correct, b.total)
 print(b.correct / b.total)
+print(b.allCorrect, "/", b.countSentence)

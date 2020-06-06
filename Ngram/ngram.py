@@ -16,11 +16,17 @@ class Ngram:
 
     def addWord(self, word, act):
         if word not in self.wordCount:
-            self.wordCount[word] = [0] * 3
+            self.wordCount[word] = [2] * 3
 
-        self.wordCount[word][act] += 1
+        if act != 0:
+            if act == 2:
+                self.wordCount[word][act] += 4
+            else:
+                self.wordCount[word][act] += 2.8
+        else:
+            self.wordCount[word][act] += 2
 
     def queryWord(self, word):
         if word not in self.wordCount:
-            return [0] * 3
+            return [2] * 3
         return self.wordCount[word]
