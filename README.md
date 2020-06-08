@@ -1,1 +1,1 @@
-Currently the accuracy is 23.3% LOL
+Currently the accuracy is 66.23% LOL

@@ -1,6 +1,7 @@
 import math
 from DataReader.conllu_reader import Reader
 from TrainingHandler.extractor import extractor
+from sklearn.preprocessing import MinMaxScaler
 
 read = Reader('Data/dev.conllu')
 
@@ -67,10 +68,10 @@ class Testing:
         scores = [0] * 3
         for x in features:
             cur = self.ngram.queryTuple(x)
+            # print(x, "->", cur)
             for i in range(3):
-                if cur[i] == 0:
-                    continue
-                scores[i] += math.log2(cur[i])
+                scores[i] += math.log2(cur[i] + 1)
+
         return scores
 
     def getValidMove(self, n, idx, stack):
@@ -103,7 +104,7 @@ class Testing:
             bestMove = max(moves, key = lambda k : scores[k])
             idx = self.trainsition(bestMove, idx, stack, deps, None if idx == n else ids[idx], result)            
             if idx == -1:
-                break
+                idx += 1
         
         all = 0
         for i in range(n):

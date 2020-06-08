@@ -9,6 +9,14 @@ class Ngram:
         return word
     
     def addTuple(self, tup, act):
+        totalLength = 0
+        for x in tup:
+            totalLength += len(x)
+        if totalLength == 0:
+            return
+
+        # if len(tup) == 2 and tup[0] == '' and tup[1] == '':
+        #     print("YES?")
         self.addWord(self.trans(tup), act)
     
     def queryTuple(self, tup):
