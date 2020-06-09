@@ -55,50 +55,29 @@ def extractor(idx, words, tags, parse, stack):
 
     Dn0s0 = min(5, w0 - s0) if s0 != 0 and w0 != None else 0
     features = []
+    unigrams = []
 
     # unigram
     for i, w in enumerate((w0, w1, w2, s0, s1, s2, s0l1, s0l2, s0r1, s0r2, w0l1, w0l2)):
-        if w is not None and len(d(w)) > 1:
-            features.append((d(w), str(i)))
+        unigrams.append((d(w), ))
+
+    bigrams = []
     
     ## (word, tag) pairs
     for i, w in enumerate((w0, w1, w2, s0)):
-        if w is not None:
-            features.append((str(i) + '>' + d(w) + '>' + t(w), ))
-            features.append((str(i) + '>' + d(w) + '>' + t(w), ))
-            features.append((str(i) + '>' + d(w) + '>' + t(w), ))
-            features.append((str(i) + '>' + d(w) + '>' + t(w), ))
-            features.append((str(i) + '>' + d(w) + '>' + t(w), ))
-            features.append((str(i) + '>' + d(w) + '>' + t(w), ))
+        bigrams.append((d(w), t(w)))
 
     ## bigrams
 
-    features.append((d(w0), d(w1)))
-    features.append((d(w0) + t(w0), d(s0)))
-    features.append((d(w0) + t(w0), t(s0)))
-    features.append((d(s0) + t(s0), d(w0)))
-    features.append((d(s0) + t(s0), t(w0)))
-    features.append((d(s0) + t(s0), d(w0) + t(w0)))
-    features.append((t(s0), t(w0)))
-    features.append((t(w0), t(w1)))
 
-    features.append((d(w0), d(w1)))
-    features.append((d(w0) + t(w0), d(s0)))
-    features.append((d(w0) + t(w0), t(s0)))
-    features.append((d(s0) + t(s0), d(w0)))
-    features.append((d(s0) + t(s0), t(w0)))
-    features.append((d(s0) + t(s0), d(w0) + t(w0)))
-    features.append((t(s0), t(w0)))
-    features.append((t(w0), t(w1)))
-
-    features.append((d(w0), d(w1)))
-    features.append((d(w0) + t(w0), d(s0)))
-    features.append((d(w0) + t(w0), t(s0)))
-    features.append((d(s0) + t(s0), d(w0)))
-    features.append((d(s0) + t(s0), t(w0)))
-    features.append((d(s0) + t(s0), d(w0) + t(w0)))
-    features.append((t(s0), t(w0)))
-    features.append((t(w0), t(w1)))
+    bigrams.append((d(w0), d(w1)))
+    bigrams.append((d(w0) + t(w0), d(s0)))
+    bigrams.append((d(w0) + t(w0), t(s0)))
+    bigrams.append((d(s0) + t(s0), d(w0)))
+    bigrams.append((d(s0) + t(s0), t(w0)))
+    bigrams.append((d(s0) + t(s0), d(w0) + t(w0)))
+    bigrams.append((t(s0), t(w0)))
+    bigrams.append((t(w0), t(w1)))
 
     # trigrams
     trigrams = ((t(w0), t(w1), t(w2)), (t(s0), t(w0), t(w1)), (t(s0), t(s1), t(w0)), 
@@ -106,16 +85,16 @@ def extractor(idx, words, tags, parse, stack):
                 (t(s0), t(s0l1), t(s0l2)), (t(s0), t(s0r1), t(s0r2)), (t(w0), t(w0l1), t(w0l2)),
                 (t(s0), t(s1), t(s2)))
     
-    for i, (t1, t2, t3) in enumerate(trigrams):
-        ## enumerate is for distinguishing between trigrams
-        if len(t1) > 0 and len(t2) > 0:
-            features.append((str(i) + '-' + t1, t2, t3))
+    # for i, (t1, t2, t3) in enumerate(trigrams):
+    #     ## enumerate is for distinguishing between trigrams
+    #     if len(t1) > 0 and len(t2) > 0:
+    #         features.append((str(i) + '-' + t1, t2, t3))
     
-    for i, (t1, t2, t3) in enumerate(trigrams):
-        ## enumerate is for distinguishing between trigrams
-        if len(t1) > 0 and len(t2) > 0:
-            features.append((str(i) + '-' + t1, t2, t3))
-            features.append((str(i) + '-' + t1, t2, t3))
+    # for i, (t1, t2, t3) in enumerate(trigrams):
+    #     ## enumerate is for distinguishing between trigrams
+    #     if len(t1) > 0 and len(t2) > 0:
+    #         features.append((str(i) + '-' + t1, t2, t3))
+    #         features.append((str(i) + '-' + t1, t2, t3))
 
     sl = getLeftSize(s0 + 1)
     sr = getRightSize(s0 + 1)
@@ -129,8 +108,30 @@ def extractor(idx, words, tags, parse, stack):
     ds = ((Dn0s0, d(s0)), (Dn0s0, t(s0)), (Dn0s0, d(w0)), (Dn0s0, t(w0)),
         (Dn0s0, d(s0) + d(w0)), (Dn0s0, t(s0) + t(w0)))
 
-    # for i, (x, y) in enumerate(sw + st + ds):
-    #     if x and y and len(y) > 0 and i != 4 and i != 7:
-    #         features.append((str(i) + '-' + x, y))
+    for i, (x, y) in enumerate(sw + st + ds):
+        if x and y:
+            bigrams.append((x, y))
+
+
+    unigrams = [x for x in unigrams if len(x[0]) > 0]
+    bigrams = [x for x in bigrams if len(x[0]) > 0]
+    trigrams = [x for x in trigrams if len(x[0]) > 0 and len(x[1]) > 0]
+
+
+    for i, x in enumerate(unigrams):
+        y = (x[0] + str(i),)
+        features.append(("unigram-" + str(i), y))
+
+
+    for i, x in enumerate(bigrams):
+        y = (x[0] + str(i), x[1])
+        features.append(("bigrams-" + str(i), y))
+
+    for i, x in enumerate(trigrams):
+        if len(x[0]) > 0 or len(x[1]) > 0 or len(x[2]) > 0:
+            y = (x[0] + str(i), x[1], x[2])
+            features.append(("trigrams-" + str(i), y))
+
 
     return features
+

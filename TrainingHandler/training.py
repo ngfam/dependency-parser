@@ -16,6 +16,7 @@ class Parse:
             self.left.append(list())
             self.right.append(list())
         
+        
     
     def add_deps(self, head, child):
         self.heads[child] = head
@@ -27,6 +28,7 @@ class Parse:
 class Trainer:
     def __init__(self):
         self.ngram = Ngram()
+        self.weights = dict()
 
     def trainsition(self, move, idx, stack, deps, rid):
         if move == RIGHT:
@@ -45,7 +47,19 @@ class Trainer:
     #add features to ngram trainer
     def train(self, features, val):
         for key in features:
-            self.ngram.addTuple(key, val)
+            self.ngram.addTuple(key[1], val)
+    
+    def weightTrainer(self, features, move):
+        for x in features:
+            if x[0] not in self.weights:
+                self.weights[x[0]] = 1
+
+            cur = self.ngram.queryTuple(x[1])
+
+            if cur[move] == max(cur):
+                self.weights[x[0]] += 0.005
+            else:
+                self.weights[x[0]] -= 0.005
 
     def sentenceTrainer(self, ids, words, tags, heads):
         # stack with root only
@@ -66,6 +80,8 @@ class Trainer:
                 move = LEFT
             else:
                 move = RIGHT
+
+            self.weightTrainer(features, move)
 
             ## add training materials
             self.train(features, move)
@@ -98,5 +114,5 @@ class Trainer:
             if flag == True:
                 self.sentenceTrainer(ids, words, tags, heads)
         
-        return self.ngram
+        return self.ngram, self.weights
         

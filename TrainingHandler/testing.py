@@ -42,12 +42,15 @@ class Parse:
             self.right[head].append(child)
 
 class Testing:
-    def __init__(self, ngram):
+    def __init__(self, ngram, weights):
         self.ngram = ngram
+        self.weights = weights
         self.correct = 0
         self.total = 0
         self.allCorrect = 0
         self.countSentence = 0
+
+        print(self.weights)
 
     def trainsition(self, move, idx, stack, deps, rid, heads):
         if move == RIGHT:
@@ -67,10 +70,12 @@ class Testing:
     def getFeatureScore(self, features):
         scores = [0] * 3
         for x in features:
-            cur = self.ngram.queryTuple(x)
+            cur = self.ngram.queryTuple(x[1])
             # print(x, "->", cur)
+        
             for i in range(3):
-                scores[i] += math.log2(cur[i] + 1)
+                if cur[i] > 0:
+                    scores[i] += math.log2(cur[i]) * self.weights[x[0]]
 
         return scores
 
@@ -90,6 +95,7 @@ class Testing:
         deps = Parse(n)
         idx = 0
         result = [-1] * (n + 1)
+
 
         while idx < n or len(stack) > 1:
             features = extractor(idx, words, tags, deps, stack)

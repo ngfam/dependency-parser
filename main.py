@@ -11,11 +11,10 @@ from sklearn.preprocessing import MinMaxScaler
 # print(scaler.fit(data))
 # print(scaler.transform(data))
 
-
 a = Trainer()
-ngram = a.process()
+ngram, weights = a.process()
 
-b = Testing(ngram)
+b = Testing(ngram, weights)
 b.process()
 
 print(b.correct, b.total)

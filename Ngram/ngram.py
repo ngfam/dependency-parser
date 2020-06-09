@@ -28,11 +28,11 @@ class Ngram:
 
         if act != 0:
             if act == 2:
-                self.wordCount[word][act] += 4
+                self.wordCount[word][act] += 8
             else:
-                self.wordCount[word][act] += 2.8
+                self.wordCount[word][act] += 5.6
         else:
-            self.wordCount[word][act] += 2
+            self.wordCount[word][act] += 4
 
     def queryWord(self, word):
         if word not in self.wordCount:
